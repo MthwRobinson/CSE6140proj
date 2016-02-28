@@ -1,0 +1,506 @@
+% This is "sig-alternate.tex" V2.1 April 2013
+% This file should be compiled with V2.5 of "sig-alternate.cls" May 2012
+%
+% This example file demonstrates the use of the 'sig-alternate.cls'
+% V2.5 LaTeX2e document class file. It is for those submitting
+% articles to ACM Conference Proceedings WHO DO NOT WISH TO
+% STRICTLY ADHERE TO THE SIGS (PUBS-BOARD-ENDORSED) STYLE.
+% The 'sig-alternate.cls' file will produce a similar-looking,
+% albeit, 'tighter' paper resulting in, invariably, fewer pages.
+%
+% ----------------------------------------------------------------------------------------------------------------
+% This .tex file (and associated .cls V2.5) produces:
+%       1) The Permission Statement
+%       2) The Conference (location) Info information
+%       3) The Copyright Line with ACM data
+%       4) NO page numbers
+%
+% as against the acm_proc_article-sp.cls file which
+% DOES NOT produce 1) thru' 3) above.
+%
+% Using 'sig-alternate.cls' you have control, however, from within
+% the source .tex file, over both the CopyrightYear
+% (defaulted to 200X) and the ACM Copyright Data
+% (defaulted to X-XXXXX-XX-X/XX/XX).
+% e.g.
+% \CopyrightYear{2007} will cause 2007 to appear in the copyright line.
+% \crdata{0-12345-67-8/90/12} will cause 0-12345-67-8/90/12 to appear in the copyright line.
+%
+% ---------------------------------------------------------------------------------------------------------------
+% This .tex source is an example which *does* use
+% the .bib file (from which the .bbl file % is produced).
+% REMEMBER HOWEVER: After having produced the .bbl file,
+% and prior to final submission, you *NEED* to 'insert'
+% your .bbl file into your source .tex file so as to provide
+% ONE 'self-contained' source file.
+%
+% ================= IF YOU HAVE QUESTIONS =======================
+% Questions regarding the SIGS styles, SIGS policies and
+% procedures, Conferences etc. should be sent to
+% Adrienne Griscti (griscti@acm.org)
+%
+% Technical questions _only_ to
+% Gerald Murray (murray@hq.acm.org)
+% ===============================================================
+%
+% For tracking purposes - this is V2.0 - May 2012
+
+\documentclass{sig-alternate-05-2015}
+\usepackage{amsmath}
+%\usepackage{algorithm}
+\usepackage{algorithm2e}
+\usepackage[noend]{algpseudocode}
+
+\begin{document}
+
+
+% Copyright
+\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
+
+
+\title{{Algorithms for Solving Minimum Vertex Cover}
+}
+\numberofauthors{3} 
+\author{
+\alignauthor
+Kenneth Droddy\\
+       \affaddr{Georgia Institute of Technology}\\
+       \email{kdroddy3@gatech.edu}
+\alignauthor
+Allen Koh \\
+       \affaddr{Georgia Institute of Technology}\\
+       \email{akoh7@gatech.edu}
+\alignauthor 
+Matthew Robinson \\
+       \affaddr{Georgia Institute of Technology}\\
+       \email{mrobinson72@gatech.edu}
+}
+
+\date{25 November 2015}
+
+\maketitle
+\begin{abstract}
+
+\end{abstract}
+
+\section{Introduction}
+In this paper, we analyze four strategies for solving the minimum vertex cover (MVC) problem for real world data sets. The purpose of varied strategies is to evaluate the merit of each on a basis of quality of the solutions and the time required to find these solutions. A branch and bound algorithm was implemented to compute an exact, optimal MVC for each data set. *Summary of Approximation Algorithm, guarantees on bounds?*. Finally, two local search algorithms were implemented to explore the space of candidate solutions in a successive fashion. The first local search strategy begins with a valid vertex cover, considers each edge, and removes one of the nodes incident to that edge if it will maintain a valid cover. In order to avoid local optima, this local search strategy employs random restarts. The second local search utilized a hill climbing strategy where, given a MVC of size k, an MVC of size k-n is sought by removing each node from the MVC and searching for neighboring nodes containing a higher degree of connections. *Short statement about results (TBD-graphs/table complete), "The experimental resolts show..." evaluating theoretical and experimental complexities* 
+
+\section{Problem Definition}
+An undirected graph $G=(V,E)$ consists of a set of vertices $V$ and a set of edges $E$, where every edge is a dual element subsection of $V$. For edge e=(u,v), e is covered by endpoints u and v.  A pair of vertices are neighbors if they belong to the same edge. $N(v)$ is the set of all vertices that are neighbors of $v$.
+	Given undirected, unweighted graph $G=(V,E)$, an MVC candidate solution can be defined as follows. A vertex cover cover is a set $C \subseteq V$ such that $\forall (u,v) \in E : u \in C \vee v \in C$. The minimum vertex cover is the set $C$ such that $|C|$ is minimized.
+
+\section{Related Work}
+BNB - 
+
+Appx - The edge deletion (ED) algorithm introduced by Gavril returns a vertex cover with an upper bound of two for the approximation ratio.  Additionally, ED can be shown to produce solutions with error levels relative to the optimal solution consistently exceeding 46%, showing solutions are often of poor quality.
+	The constructive heuristic analyzed in this paper follows the same non-deterministic choice of edges and nodes as ED and hence shares the same upper bound on the approximation ratio.
+
+LS - Typical local search techniques involve exchanging pairs of vertices simultaneously, which can be time consuming.  Cai et al. introduce weighting function w for G in order to evaluate candidate vertices and swap them in a two stage exchange.  A candidate solution X has cost as $cost(G,X) = \sum w(e), e\in E and e is not covered by X$.  Furthermore, each vertex, v, is evaluated by its dscore, which measures the benefit of changing the state of vertex v.  The dscore is defined as $dscore(v) = cost(G,C)-cost(G,C')$.
+	The two stage exchange begins by choosing a vertex, u, to remove from the current candidate solution.  This vertex is chosen by finding $u \in C$ with the maximum dscore.  Next, a random, uncovered edge is chosen and the endpoint of this edge with the highest dscore is added to C.  This approach presents the typical local search algorithm trade off between step complexity and accuracy of heuristics.  The result of the two stage exchange is a drastic reduction in the time complexity per step.
+
+*Deliverable for this section: important results in theory and practice for each work on the same problem*
+*Citations here will need to reference our bibliography:
+Appx: "Analytical and experimental comparison of six algorithms for the vertex cover problem" (Delbot, Laforest)
+LS: "Two New Local Search Strategies for Minimum Vertex Cover" (Cai, Su, Sattar)
+
+\section{Algorithms}
+\subsection{Branch and Bound}
+The Branch and Bound approach computes an exact solution to the minimum vertex cover problem by systematically exploring the search space in order to discover an optimal solution. In the minimum vertex cover problem, there are $|V|$ nodes and each node must be considered for inclusion in the vertex cover. As a result, the search space consists of $2^{|V|}$ possible configurations. Clearly, comparing an exponential number of possible solutions involves significant computational time. To avoid this, the branch and bound algorithm explores the search space systematically by considering more promising configurations first, and pruning parts of the search space that are guaranteed to produce sub-optimal solutions. To accomplish this, we must consider four design choices: the sub-problem on each bound, how to choose which sub-problem to expand, how to expand that sub-problem and how to establish a lower bound on the solution. These design choices govern how effectively the branch and bound algorithm explores the search space.
+\subsubsection{Sub-Problem}
+On each iteration of the branch and bound, a sub-problem is generated in the following manner. First, a node $v$ is considered for inclusion in the vertex cover. If $v$ is included in the vertex cover, then all edges incident to that vertex are now covered. Consider a graph $G'=(V',E')$ where $E'$ is the set of all remaining uncovered edges and $V' = V \setminus \lbrace v \rbrace $. The sub-problem in this case is finding the minimum vertex cover of $G' = (V',E')$.
+\\
+\\
+If $v$ is not included in the vertex cover then, in order to cover all edges in the graph, all vertices $u \in N(v)$ must be included in the vertex cover. As in the first case, all edges incident to $v$ are now covered. Consider $G'=(V',E')$  where $E'$ is the set of all remaining uncovered edges and $V' = V \setminus \lbrace \lbrace v \rbrace \cap N(v) \rbrace $. The sub-problem in this case is finding the minimum vertex cover of $G' = (V',E')$. 
+\subsubsection{Choosing a Sub-problem to Expand}
+Each call to the branch and bound algorithm results in the creation of two sub-problems. The algorithm considers these problems sequentially. As such, it employs a depth first traversal of the search space. The employment of a depth first approach is justified by the method for expanding the sub-problem, which is discussed below. In particular, the most promising vertex is considered on each stage of the branch and bound. This means that a depth first traversal of the search space will consider vertex covers that consist of the most promising vertices first. These vertices are more likely to appear in a minimum vertex cover. As such, a depth first traversal of the search space is a reasonable strategy.
+
+\subsubsection{Expanding the Sub-problem}
+The branch and bound implementation chooses which sub-problem to expand by finding the highest degree vertex $v \in V'$. Since they cover more edges, it is reasonable to expect that higher degree vertices are more likely to be included in the minimum vertex cover. In addition, choosing the highest degree vertex results in the smallest residual graph $G'=(V',E')$. This means that the branch and bound algorithm makes recursive calls to smaller instances of the minimum vertex cover problem. Since they involve smaller input instances, these recursive calls should have faster run times. If we combine the highest degree first heuristic with the depth-first traverse of the search space, we see that the algorithm considers the most promising configurations first before backtracking.
+\subsubsection{Lower Bound}
+The branch and bound algorithm establishes a lower bound on the size of the minimum vertex cover by solving the linear programming (LP) relaxation of the minimum vertex cover problem. First, observe that the minimum vertex cover problem can be formulated as as a integer linear program (ILP) in the following manner:
+\\
+\\
+Let $x_i = 1$ if vertex $v_i$ is included in the minimum vertex cover, $0$ otherwise $\forall i \in V$.
+\\
+\\
+minimize   : $z=\sum_{i=1}^{|V|} x_i$
+\\
+subject to : $x_j + x_k \geq 1$ $ \forall$ $ (j,k) \in E$
+\\
+with bounds: $ x_i \in \lbrace 0,1 \rbrace$ $\forall$ $i \in V$
+\\
+\\
+To obtain the LP relaxation of this problem, we convert the bound to $ 0 \leq x_i \leq 1$ $\forall$ $i \in V$. By relaxing this bound, we expand the feasible set of the problem. Since the feasible set of the ILP is a subset of the feasible set for the LP, we know $z_{ilp}^{\star} \geq z_{lp}^{\star}$, where $z^{\star}$ is an optimal solution. Therefore, the solution to the LP relaxation of the minimum vertex cover problem produces a useful lower bound.
+\subsubsection{Discussion}
+The primary advantage of using the branch and bound algorithm is that, if it runs to completion, it will produce an exact solution. Its main drawback is that its time complexity is worse than the approximation or local search algorithms by a significant margin. Specifically, we can compute a lower bound on the time complexity by considering the size of the search space, which consists of $2^{|V|}$ possible configuration. In the worst case, the branch and bound may need evaluate each of these configuration. As such, it is clear that a lower bound on the time complexity of the branch and bound algorithm is $\Omega (2^{|V|})$. In fact, the time complexity of the algorithm is much worse than this since the LP relaxation of the MVC problem must be solved using the simplex method on each iteration. In practice, because of the computational costs involved, the branch and bound algorithm is only appropriate for small instances of the MVC problem.
+
+\subsection{Approximation}
+Due to the computational costs associated with the branch and bound algorithm, it is not appropriate for larger instances of the MVC problem. In lieu of an exact solution, approximation algorithms provide guarantees on solution quality and run in polynomial time. In this section, we will develop an algorithm that provides a 2-approximation to the optimal solution of the MVC problem in polynomial time.
+\\
+\\
+We can build an approximation to the minimum vertex cover in the following manner. Consider a graph $G=(V,E)$. For each edge $e=(u,v) \in E$, if $u$ or $v$ is not yet in the vertex cover, add it. It is straightforward to establish that this approach produces a valid vertex cover. Recall that a vertex cover is a set $C \subseteq V$ such that $u$ or $v \in C$ $\forall$ $(u,v) \in E$. When considering each edge, if the conditions for a valid vertex cover are not met, both vertices are inserted in the cover. Therefore, the final result is a set of vertices that cover each edge.
+\\
+\\
+The approximation algorithm described above produces a 2-approximation to the optimal minimum vertex cover. To understand why, first observe that the optimal minimum vertex cover, $C_{opt}$, must contain at least one endpoint from each edge. Let $A$ be the set of edges for which both endpoints were chosen for the vertex cover. Since no vertices would be added to the cover for any edge that shares a vertex with $e$, no two edges in $A$ are covered by the same vertex in $C_{opt}$. This means that $|C_{opt}| \geq |A|$.  Let $C$ be the vertex cover produced by the approximation algorithm. Since $C$ contains two vertices for each edge in $A$, $|C|=2|A|$. Combining these, we have $|C|=2|A|\leq 2|C_{opt}| \rightarrow |C| \leq 2|C_{opt}|$. Therefore, we have established that the algorithm is a 2-approximation for the minimum vertex cover.
+\\
+\\
+Since the approximation algorithm must consider every edge in $E$, its time complexity is $O(|E|)$. The advantage of the approximation algorithm is that it produces results quickly. However, for certain instances, it can produce solutions that differ from the optimal solution by a prohibitively high margin. As such, we see that branch and bound and approximation lie on extreme ends of a the exactness-runtime trade off spectrum. To find solutions that balance these priorities, we must appeal to local search methods, which we will discuss below.
+
+\begin{algorithm}
+\SetKwInput{Input}{Input}
+\SetKwInput{Output}{Output}
+\SetKwInput{Return}{Return}
+\LinesNumbered
+\DontPrintSemicolon
+\BlankLine
+ 
+
+\caption{Approximation}
+\Input{$G=(V,E)$}
+\Output{$C$}
+
+\BlankLine
+\Begin
+{
+	$ n \leftarrow |V|$\;
+	$ C \leftarrow \emptyset$ \;
+	\ForAll{$e=(u,v) \in |E|$}
+	{
+		\If{$u \in C \texttt{ or } v \ in C$}
+		{
+			$\texttt{continue}$\;
+		}
+		\Else{}
+		{
+			$ C \leftarrow C \cup \lbrace u,v \rbrace$\;
+		}
+	}
+	\Return{$C$}\;
+}
+\end{algorithm}
+
+\subsection{Local Search -- Introduction}
+While branch and bound provides an exact solution to the minimum vertex cover problem, its run time is exponential in the worst case. This makes the algorithm unsuitable for larger instances of the problem. Local search provides one method for obtaining an approximate solution to the problem in a reasonable amount of time. Local search methods begin with an initial feasible solution, and progressively move to better neighboring solutions. The neighborhood set and the evaluation function for a particular local search method define how it explores the search space to obtain better solutions. In this paper, we will consider two local search algorithms for the minimum vertex cover problem.
+
+\subsection{Local Search 1 -- Edge-by-Edge}
+The first local search method progresses through the search space by starting with a valid vertex cover $C$ of the graph $G=(V,E)$. It moves to better solutions by removing vertices from the initial vertex cover in cases where the removal of those vertices would maintain a valid vertex cover. The algorithm considers vertices for removal by iterating through all edges $e=(u,v) \in E$, and checking whether the removal of $u$ or $v$ would maintain a valid cover. In cases where the removal of both vertices would maintain a valid cover, it removes the lower degree vertex, since the lower degree vertex is less likely to appear in an optimal solution. In order to avoid local optima, the algorithm employs random restarts. Specifically, it randomly deviates from the solution produced on the previous iteration and shuffles the order in which the edges are considered. This allows the algorithm to explore a larger subset of the search space.
+\subsubsection{Neighborhood Relation}
+For this procedure, we define the neighborhood relation as follows. Consider a graph $G=(V,E)$ and a valid vertex cover $C$. Suppose that, on the current iteration, we are considering the vertices incident to edge $e=(u,v)$ for removal from $C$. Then the set of neighboring solutions on this iteration is $ \lbrace C \setminus \lbrace u \rbrace, C \setminus \lbrace v \rbrace \rbrace$. In other words, the neighboring set consists of configurations where one of the vertices incident to $e$ is removed from $C$.  
+\subsubsection{Evaluation Function}
+The algorithm uses the following method to evaluate candidate solutions in the neighboring set. First, it considers the validity of the solutions. If removing a vertex results in an invalid vertex cover, then the corresponding candidate solution is not considered. In this way, the algorithm guarantees that it will move from one valid solution to another valid solution on each iteration. Next, it compares the size of the candidate solutions. The procedure does not need to explicitly evaluate candidate solutions according to this criterion, since the only possible move on any iteration is from a vertex cover of size $k$ to a vertex cover of size $k-1$. Such a move results from the removal of a vertex from $C$. Finally, if the removal of either vertex would maintain a valid cover, the procedure prefers the removal of the lower degree vertex. This ensures that higher degree vertices, which are more likely to appear in an optimal solution, remain in the vertex cover. Using this evaluation method guarantees that the local search progresses to a better solution on each iteration.
+\subsubsection{Random Restarts}
+The local search procedure employs random restarts in order to avoid local optima. Each restart randomizes two elements of the algorithm: the initial valid vertex cover and the order in which the edges are considered. To change the initial valid vertex cover, a user specified percentage of random vertices from $V \setminus C$ are added to the solution that was generated on the previous iteration. Experimentation showed that adding 25 percent of the missing vertices tended to show good results, so this value was set as the default. The order in which the vertices are considered is randomized by shuffling the order of the elements in $E$. This ensures that vertices are considered for removal from $C$ in a different order on every run of the procedure. The algorithm runs a user specified number of restarts when the local search procedure is called. On most instances, choosing 20 restarts produced good solutions in a reasonable amount of time. Increasing the number of restarts to 30 did not produce high enough quality solutions to justify a higher computational cost. Running the procedure with 10 restarts did, however, produce noticeably worse results. Because of this, 20 restarts was established as the default parameter for the procedure.
+\subsubsection{Discussion}
+The principle advantage of employing this local search strategy is that is provides a middle ground between the speed of the approximation algorithm and the exactness of the branch and bound algorithm. First, observe that the edge-by-edge local search strategy consists of one for loop that inserts random vertices into the vertex cover and another for loop that iterates through all edges in the graph. This means that the time complexity of the algorithm is $O(|V||E|)$. This is worse than the approximation algorithm, which runs in $O(|E|)$. However, the random restarts allow the local search strategy to explore more of the search space. Because of this, it produces higher quality solutions than the approximation algorithm. Unlike the branch and bound algorithm, it does not produce exact solutions. However, with a sufficiently high number of restarts, it can obtain a solution that is arbitrarily close to the exact solution. Moreover, in practice, the local search obtains higher quality solutions than the best solution that branch and bound produces after running for one hour. Because of this, in most cases, local search is the best strategy in terms of both run time and solution quality.
+
+\begin{algorithm}
+\SetKwInput{Input}{Input}
+\SetKwInput{Output}{Output}
+\SetKwInput{Return}{Return}
+\LinesNumbered
+\DontPrintSemicolon
+\BlankLine
+ 
+
+\caption{Local Search 1: Edge-by-Edge}
+\Input{$G=(V,E), \texttt{ restarts}, \texttt{ pct}$}
+\Output{$C$}
+
+\BlankLine
+\Begin
+{
+	$C \leftarrow V$\;
+	$\texttt{Best} \leftarrow C$\;
+    \ForAll{$i \in [1, \texttt{ restarts}]$}
+    {
+    		\If{$i \neq 1$}
+    		{
+    			\tcp{D is the set of all nodes not in C}
+        		$D \leftarrow V \setminus C$\;
+        		$n \leftarrow \texttt{floor}(\texttt{pct} * |D|)+1$\;
+        		\tcp{Add $n$ random vertices to C}
+        		\ForAll{$j \in [1,n]$}
+        		{
+        			$r \leftarrow \texttt{random\_vertex}(D)$\;
+        			$C \leftarrow C \cup \lbrace r \rbrace$\;
+        		}
+        		
+        }
+        \tcp{Randomly order the edges}
+        $ E' \leftarrow \texttt{random\_shuffle}(E)$\;
+        \ForAll{$e=(u,v) \in E'$}
+        {
+        		\If{$u \in C \texttt{ and } v \in C$}
+        		{
+        			\If{$\texttt{degree}(u) \geq \texttt{degree}(v)$}
+        			{
+        				\If{$C \setminus \lbrace u \rbrace \texttt{ is a valid cover}$}
+        				{
+        					$C \leftarrow C \setminus \lbrace u \rbrace$\;
+        				}
+				}
+			
+				\ElseIf{$\texttt{degree}(u) < \texttt{degree}(v)$}
+				{
+					\If{$C \setminus \lbrace v \rbrace \texttt{ is a valid cover}$}
+					{
+						$C \leftarrow C \setminus \lbrace v \rbrace$\;
+					}
+				}
+				
+        			
+        		}
+        }
+        \If{$|C| < |\texttt{Best}|$}
+        {
+        		$\texttt{Best} \leftarrow C$\;
+        }
+    }
+    \Return{$\texttt{Best}$}
+}
+
+\end{algorithm}
+
+ 
+\subsection{Local Search 2 -- Hill Climbing}
+\subsubsection{Description}
+The hill climbing heuristic is a local search algorithm that explores the space of potential minimum vertex cover solutions in a successive manner in an attempt to move from the current solution to a better, neighboring solution.  As previously stated, the search space for the MVC is $2^{|V|}$ and the fundamental basis of this ascension type search provides an MVC relatively quickly, but its myopic nature implies the potential for missing global maximum(s), thus providing a suboptimal solution.
+\\
+\\
+The initial solution, C, for each graph will be the vertex cover generated by the approximation algorithm. Based on the nature of the vertex cover problem, it will be assumed that the higher the degree of a node, the better it is as a candidate for a minimum vertex cover solution.
+\subsubsection{Sub-Problem}
+On each iteration of the hill climbing algorithm, a sub-problem is created by selecting the first available node, $v$, from the current solution, $G(V,E)$, and it is compared to its next neighbor in $V$ to determine if it will be included or excluded from the new solution, $G’(V’,E’)$.  If the degree of $v$ is greater than its neighbor, then the algorithm stops and adds $v$ to $G’$.  Otherwise, the node $v$ is updated to be equal to the neighboring node and the comparison is repeated until the aforementioned stopping criterion is met.
+\\
+\\
+When the sub-problem stops, node v will be removed from $V$ and added to $V’$.  The edges incident to v will also be removed from $E$ and added to $E’$.  Finally, the degree of each node in $G(V,E)$ is updated so that the next iteration of the sub-problem will only consider those edges that $G’(V’,E’)$ has not yet covered.
+\subsubsection{Future Improvements}
+The second local search algorithm will utilize a stochastic perturbation strategy so that differences in behavior can be compared with the current linearly ascending local search algorithm.
+
+\subsubsection{Discussion}
+On each iteration of the algorithm, an exchange is performed on the nodes of C(V) in two stages as it seeks to build a better solution, C*(V*). Prior to the two stage process, the nodes in C are sorted from highest to lowest degree and the nodes of G are randomly sorted. Sorting C in this manner allows us to examine the nodes of highest degree early, as they are likely to either be in C* or to lead us to a candidate node of an even higher degree.  Randomizing the nodes of G for each iteration of the algorithm allows us to attempt to avoid local maximum in our search for global maximum.  
+\\
+\\
+
+In the first stage of exchange, a node, u, at the beginning of C is chosen and removed from C.  In the second stage, a new candidate node, v, will be searched for amongst the uncovered nodes in G that are neighbors to u.  If neither neighbor to u is a node of a greater degree, then v=u will be returned.  If a neighbor is greater than u, then u will be updated to equal that neighbor and the search for neighbors of increasing degree will continue until a maximum is reached. The node that the search stops at will be set to v. Finally, v will be added to C*, all edges incident to v in G will be removed, and v will be removed from G. Updating G in this manner will allow us to focus only on uncovered edges for the next iteration of the problem. The algorithm will then return to C, pick the next node in the list as u, and continue the process until C* represents a vertex cover.
+\\
+\\
+The initial run of the algorithm will seek to find size k, C*=|k|=C.  Next, the algorithm will remove the first node from C* so that the size is equal to k-1, set this new set of nodes to C, and search for a new solution to C*.  The algorithm is set up to continue to search until at least a k-1 solution is found or a cutoff time is reached.  Once a k-1 or smaller solution is found, the algorithm will continue to search for smaller vertex covers until the cutoff time is reached or vertex covers of all size less than k have been tried.
+\\
+\\
+	The time complexity of the algorithm is a combination of the various steps completed to find C*.  Sorting the nodes is bounded by O(|V|log|V|).  Exchanging nodes u and v is bounded by O(2|V|).  Finally, iterating through the candidate solutions of size k or less is bounded by O$(|V|^{2})$.  Therefore, the worst case search is bounded by O$(|V|^{2})$.  The space complexity of the solution, C*, is bounded by O(|V|).
+
+
+\begin{algorithm}
+\SetKwInput{Input}{Input}
+\SetKwInput{Output}{Output}
+\SetKwInput{Return}{Return}
+\LinesNumbered
+\DontPrintSemicolon
+\BlankLine
+ 
+
+\caption{Local Search 2: Hill Climbing}
+\Input{$G=(V,E)$}
+\Output{$C$}
+
+\BlankLine
+\Begin
+{
+	$C \leftarrow \texttt{min\_VC\_approximation}(G)$\;
+	$C' \leftarrow \emptyset$\;
+	$V' \leftarrow \texttt{random\_shuffle}(V)$\;
+	$\texttt{Best} \leftarrow C$\;
+	\ForAll{$i \in [1,|C|] $}
+	{
+		$C' \leftarrow C [ i .. |C|]$\;
+		\ForAll{$ j \in [i,|C'|$}
+		{
+			$v \leftarrow C[j]$ ; $V' \leftarrow V$\;
+			\If{$V' == \emptyset$}
+			{
+				$\texttt{Best} \leftarrow C'$\;
+			}
+			\If{$v \in V'$}
+			{
+				$i \leftarrow V'.\texttt{index}(v)$\;
+			}
+			\ElseIf{$v \texttt{ not } \in V'$}
+			{
+				$v \leftarrow V'[1]$ ; $i \leftarrow V'.\texttt{index}(v)$\;
+							}
+			\ForAll{$k \in [i,|V'|$}
+			{
+				\If{$|V| == 1$}
+				{
+					$v' \leftarrow v$ ; $\texttt{break}$\;
+					
+				}
+				\ElseIf{$k == |C| - 1$}
+				{
+					\If{$\texttt{degree}(V'[k-1]) > \texttt{degree}(V'[k])$}
+					{
+						$v' \leftarrow V'[k-1]$ ; $\texttt{break}$\;			
+					}
+					\ElseIf{$\texttt{degree}(V'[k-1]) \leq \texttt{degree}(V'[k])$}
+					{
+						$v' \leftarrow v$ ; $\texttt{break}$\;				
+					}
+				\ElseIf{$\texttt{degree}(V'[k+1])>\texttt{degree}(V'[k])$}
+				{
+					$v' \leftarrow v$ ; $\texttt{break}$\;					
+				}
+				\ElseIf{$k == 0$}
+				{
+					$v' \leftarrow v$; $\texttt{break}$\;
+				}
+				\Else{}
+				{
+					$v' \leftarrow V'[k]$\;
+				}
+			}
+		}
+		$C' \leftarrow C' \cup \lbrace v' \rbrace$\;
+		$V \leftarrow V \setminus \lbrace \texttt{neighbors}(v') \rbrace$\;
+		$V \leftarrow V \setminus \lbrace \texttt{isolated\_nodes}(V)$\;
+		\If{$ j == |C'|-1$}
+		{
+			\If{$V == \emptyset$}
+			{
+				$\texttt{Best} \leftarrow C$\;
+			}
+			\ElseIf{$i == 1$}
+			{
+				$\texttt{min\_VC\_Hills}(G=(V,E)$\;
+			}
+		}
+		\If{$V == \emptyset$}
+		{
+			$\texttt{Best} \leftarrow C$ ; $\texttt{break}$\;
+		}
+	}
+	}
+	\Return{\texttt{Best}}\;
+}
+\end{algorithm}
+
+\section{Empirical Evaluation}
+The algorithms discussed in this paper were implemented in Python. The were run on a computer with 8 GB of RAM, four 1.70 GHz Intel Core i5-4210U processors and the Linux Ubuntu 14.04 operating system. Each algorithm was run on the same computer to enable valid comparisons of the empirical runtime of the algorithms.
+\\
+\\
+The branch and bound algorithm was run on each graph and produced the results indicated in the table below. Since the branch and bound algorithm has an exponential running time in the worst case, we limited the algorithm to running for one hour. After one hour, if the algorithm did not obtain an optimal solution, it returned the best solution found so far. If it did not find a feasible solution, then no solution was returned. The algorithm ran to completion on the karate graph and produced an optimal solution. On the football and jazz graphs, the algorithm ran for one hour and produced feasible, but sub-optimal solutions. These graphs are indicated with a * in the results table. The minimum vertex cover values for these graphs are the best solution found after one hour and the time reported is the time it took the algorithm to find that solution. In general, the results indicate that branch and bound is a useful method for finding exact solutions to small instances of the minimum vertex cover problem, but becomes impractical as the problem size grows.
+
+\begin{center}
+Branch and Bound
+\begin{tabular}{c c c c}
+Data Set & Time & VC Value & Rel Error \\
+Karate & 0.80 & 14 & 0.000 \\
+Football* & 491.31 & 96 & 0.021 \\
+Jazz* & 3341.85 & 163 & 0.032 \\
+E-mail & 3600.00 & No Soln & -- \\
+July & 3600.00 & No Soln & -- \\
+Delaunay & 3600.00 & No Soln & -- \\
+Hep-th & 3600.00 & No Soln & -- \\
+Netscience & 3600.00 & No Soln & -- \\
+Power & 3600.00 & No Soln & -- \\
+Star & 3600.00 & No Soln & -- \\
+Star2 & 3600.00 & No Soln & -- \\
+\end{tabular}
+\end{center}
+
+The approximation algorithm was run on each graph and produced the results reported in the table. In general, the approximation algorithm produced results quickly, but had the worst relative error of any of the approaches. This suggests that the approximation algorithms is appropriate to use on large graphs when faster run times are prioritized over solution quality. The solutions produced by the approximation algorithm serve as a lower bound on the quality of the optimum solution. The optimal solution can be no more than twice as good as these solutions
+
+\begin{center}
+Approximation
+\begin{tabular}{c c c c}
+Data Set & Time & VC Value & Rel Error \\
+Karate & 0.000 & 20 & 0.429 \\
+Football* & 0.000 & 108 & 0.149 \\
+Jazz* & 0.000 & 190 & 0.168 \\
+E-mail & 0.031 & 838 & 0.2912 \\
+July & 1.154 & 6052 & -- \\
+Delaunay & 0.032 & 966 & -- \\
+Hep-th & 0.823 & 5800 & -- \\
+Netscience & 0.031 & 1226 & -- \\
+Power & 0.327 & 3792 & -- \\
+Star & 4.801 & 10514 & -- \\
+Star2 & 9.668 & 6838 & -- \\
+\end{tabular}
+\end{center}
+
+The local search algorithm was run on each graph instance using 20 random restarts, where 25 percent of the vertices outside of the vertex cover were reinserted on each restart. Since the algorithm involves random elements, it was run ten times on each instance with a specified seed in order to observe a distribution of results and run-times. The results table reports the sample mean of the run time and the vertex cover size over the ten runs of the algorithm. In general, the algorithm produced good results in a reasonable amount of time. For smaller instances, it produced approximate solutions that were within two percent of the value of the optimal solutions. In all cases, it produced results that were substantially better than the approximation algorithm. However, the run times for the local search were an order of magnitude slower than the approximation.  Additionally, the local search outperformed the branch and bound algorithm on solution quality when a one hour cutoff was set for the branch and bound. Taking all of these observations into consideration, it is clear that the local search is the best strategy for smaller graphs. It is also the preferred technique for larger graphs when solution quality is prioritized over run-time. When run-time is prioritized, the approximation algorithm may be a better approach.
+
+\begin{center}
+Local Search 1 -- Edge-by-Edge
+\begin{tabular}{c c c c}
+Data Set & Time & VC Value & Rel Error \\
+Karate & 0.0024 & 14 & 0.000 \\
+Football & 0.0592 & 95.3 & 0.014 \\
+Jazz & 0.5221 & 159.7 & 0.011 \\
+E-mail & 3.59 & 622.3 & 0.048 \\
+July & 269.93 & 3454.9 & -- \\
+Delaunay & 2.00 & 735.8 & -- \\
+Hep-th & 73.41 & 4006.9 & -- \\
+Netscience & 2.15 & 902.4 & -- \\
+Power & 18.40 & 2290.8 & -- \\
+Star & 409.69 & 7455.0 & -- \\
+Star2 & 438.20 & 4740.1 & --
+\end{tabular}
+\end{center}
+
+The hill-climbing algorithm was run for ten iterations on each graph and the average of the results are provided in the table below. As predicted, the algorithm performed relatively quickly on each iteration.  The cutoff run time for each iteration was 600 seconds, but most graphs were analyzed in under five seconds, with the worst case graph taking approximately 66 seconds.  In addition, the relative error relative to the known MVC solutions was maintained below 13.6 percent
+
+\begin{center}
+Local Search 2 -- Hill Climbing
+\begin{tabular}{c c c c}
+Data Set & Time & VC Value & Rel Error \\
+Karate & 0.003 & 15 & 0.071 \\
+Football & 0.16 & 100 & 0.064 \\
+Jazz & 0.034 & 173 & 0.087 \\
+E-mail & 0.248 & 687 & 0.135 \\
+July & 26.090 & 3462 & -- \\
+Delaunay & 0.276 & 777 & -- \\
+Hep-th & 0.248 & 687 & -- \\
+Netscience & 0.640 & 905 & -- \\
+Power & 3.976 & 2460 & -- \\
+Star & 53.975 & 6771 & -- \\
+Star2 & 65.650 & 5727 & --
+\end{tabular}
+\end{center}
+
+
+
+\section{Discussion}
+The primary criteria utilized in evaluating the quality of the solution for each algorithm are run time and relative error as calculated against the optimal MVC sizes.
+\\
+\\
+	The most noticeable contrast for algorithmic run time is between the branch and bound and the approximation algorithms. As expected, the search for exact solutions with branch and bound often timed out and indeed only completed analysis on three graphs. The longest solved graph was Jazz, which took 3342 seconds. In contrast, the approximation algorithm was able to solve the Jazz graph in less than a second. The run time for the approximation outperformed all graphs by a significant degree. The local search algorithms produced similar absolute run time results for the smaller graphs, but diverged significantly for the larger graphs such as Star and Star2. Regarding the run time criterion, the ordered ranking of the algorithms is: approximation, hill-climbing, edge-by edge, and branch and bound.
+\\
+\\
+	Unexpectedly, the exact search of the branch and bound was not the best candidate for this criterion for the MVC solutions it did find. The edge-by-edge produced the smallest MVC of all the algorithms for each graph with the exception of Star. The initial anticipated results were an ordered ranking with branch and bound as the top candidate and approximation as the last candidate. The empirical results show that the ordered ranking is: edge-by-edge, branch-and-bound, hill climbing, and approximation.
+\\
+\\
+	The second criterion to consider is relative error between each algorithm’s solution and the optimal solution for each graph. For any graph G with n vertices, let OPT(G) represent the size of the optimal MVC.  A(G) will represent the average size of the MVC contructed by each algorithm, A. The relative error will be defined as the percent error of algorithm A on graph G by: 100*(A(G)-OPT(G))/(OPTG). The optimal solutions were only available for the Jazz and E-mail graphs, but best reported solutions were used for the Football, 94, and Karate, 14, graphs in order to calculate relative error. Unexpectedly, the exact search of the branch and bound was not the best candidate for this criterion for the MVC solutions it did find. The edge-by-edge produced the smallest MVC of all the algorithms for each graph with the exception of Star. The initial anticipated results were an ordered ranking with branch and bound as the top candidate and approximation as the last candidate. The empirical results show that the ordered ranking is: edge-by-edge, branch-and-bound, hill climbing, and approximation.
+\\
+\\
+	A universal comparison combining run time and relative error has not been vetted to objectively rank the quality of the four algorithms.  Further boundaries upon the weight of each criterion would have to be established on a case by case basis to ascertain the best algorithm to implement.  The approximation algorithm provides by far the fastest results, but it also produces solutions 13-75 percent larger than the edge-by-edge method.  Minimizing vertex cover size and relative error to the optimal solution are best served by implementing the edge-by-edge method.  One may be tempted to choose edge-by-edge as the top candidate algorithm based on its relatively quick run time and best-case solution, but a definitive answer is not available without further boundaries.
+
+\section{Conclusion}
+Four algorithmic search methods were implemented and evaluated for the minimum vertex cover (MVC) problem:  branch and bound, edge-by-edge local search, hill climbing local search, and an approximation constructive heuristic. 
+\\
+\\
+            An interesting result is that the edge-by-edge search provided solutions equal to or better than those provided by the branch and bound algorithm. Given the branch and bound's extensive run time, it could be concluded that the branch and bound algorithm is not a suitable candidate for solutions when it is consistently outperformed by edge-by-edge.
+\\
+\\
+            It is acknowledged that the term best is limited to the purposes of this study and that circumstantial conditions provided by additional problems with supplementary boundaries may reveal differing results. However, from this analysis we can conclude that the edge-by-edge provides the best relative error and the approximation provides the best search time. The results of this paper reveal the expected tradeoffs between solution precision and algorithm run-time.  For the purposes of this specific study, the edge-by-edge search appears to be the best candidate as it yields the best quality solutions at reasonable run times.  It is believed that further investigation into improvements on the branch and bound algorithm may alter the definiteness of this conclusion
+
+
+
+
+\end{document}

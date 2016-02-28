@@ -1,0 +1,40 @@
+CSE 6140 Project README
+Fall 2015
+Matthew Robinson, Kenneth Droddy, Allen Koh
+
+==========================================================================================
+
+CODE STRUCTURE:
+
+The code accepts 4 inputs: the graph file dataset, a type of algorithm, the cutoff time in seconds, and a random seed integer.  The algorithm type determines which function to use to generate the minimum vertex cover.  The cutoff time limits the runtime of the algorithms and the random seed adds variance to the starting node of the graph. To generate the trace files and keep track of the cutoff time, all algorithms record a start-time and intermediate solutions as the solutions improve.  The algorithms then output the minimum vertex cover, which is a list of vertices, and the trace, which is the time and quality for every time the quality of the solution increased.  These two results sets are then output into a solution file and trace file respectively.
+Graph operations were done using the networkx package in Python.
+The scipy.optimize function is used in the Branch and Bound algorithm for the vc_lp_relax function.
+
+==========================================================================================
+
+RUNNING THE CODE:
+
+To run the code (min_vertex_cover.py) you need to set you CWD to the location of the python file and run the following command:
+
+python min_vertex_cover.py —-inst <graphfile path> —-alg <algorithm> —-time <time cutoff> —-seed <random seed>
+
+The <algorithm> must be one of the following:
+
+BnB
+Approx
+LS1
+LS2
+
+==========================================================================================
+
+OUTPUTS:
+
+Outputs will be written to the same folder as the python file with the following naming convention:
+
+For BnB and Approx:
+<graphfile name>_<method>_<cutoff>.sol
+<graphfile name>_<method>_<cutoff>.trace
+
+For LS1 and LS2:
+<graphfile name>_<method>_<cutoff>_<randSeed>.sol
+<graphfile name>_<method>_<cutoff>_<randSeed>.trace

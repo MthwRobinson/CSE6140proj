@@ -1,0 +1,143 @@
+import networkx as nx
+import sys,os
+import time
+from heapq import heappop, heappush
+import itertools
+from operator import itemgetter
+
+#--------------------------------------------------------------
+# Procedures for importing .graph files
+#---------------------------------------------------------------
+def file_edges(filename):
+    #---------------------------------------------------------
+    directory = os.getcwd()+'/DATA/'
+    #----------------------------------------------------------
+    
+    filename = directory +filename
+    # Read the edges and weights in from the .graph file and arrange
+    #   the data in a way that can be accepted by the networkx
+    #   multi-graph object
+    graph_file = open(filename,'r')
+    # Parse the .graph file and create a list of edges and weights
+    adj_list = []
+    for line in graph_file:
+        line = line.strip().split()
+        # Convert input to int values
+        data_list = [int(x) for x in line] 
+        adj_list.append(data_list)
+    graph_file.close()
+    return adj_list
+
+def read_graph(filename):
+    adj_list = file_edges(filename)
+    # The header contains data about the size of the graph
+    header = adj_list[0]
+    # Create an instance of the multi graph object and add edges from
+    #   the adjacency list to the graph object
+    G = nx.Graph()
+    n = len(adj_list[1:])
+    # For each node in the adjacency list, add edges to each node
+    #   adjacent to it
+    for i in range(n):
+        current_node = i+1
+        m = len(adj_list[i+1])
+        for j in range(m):
+            end_node = adj_list[i+1][j]
+            G.add_edge(current_node,end_node)
+    return G, header
+
+#-----------------------------------------
+#Local Search - Hill Climbing   - 12-03-2015  
+#-----------------------------------------
+
+def nodes_by_degree2(G):
+    # Returns a list of the nodes in a graph, sorted by node number
+    degree_list2  = sorted(G.degree_iter(),key=itemgetter(0),reverse=False)
+    return degree_list2
+    
+def residual_graphLS(G,v):
+    # Input, G, the original graph
+    # v, the vertex added to the vertex cover
+    # Output: G1, the graph consisting of edges not
+    #    convered by C and the nodes not in C
+
+    G1 = nx.Graph()
+    for node in G.nodes():
+        G1.add_node(node)
+    for edge in G.edges():
+        G1.add_edge(edge[0],edge[1])
+    
+    # Remove all edges in G that are covered by v
+    neighbors = G1.neighbors(v)
+    for u in neighbors:
+        G1.remove_edge(v,u)
+    # Remove v from G
+    G1.remove_node(v)
+        
+    # Remove isolated nodes from G (this will include v)
+    isolates = nx.isolates(G1)
+    for node in isolates:
+        G1.remove_node(node)
+    #    degreeQ.remove_node(node)  
+    return G1 
+def minVC_approx1(G):
+    C = [node for node in G.nodes()]
+    keep = []
+    edges = G.edges()
+    for edge in edges:
+        if (edge[0] in C) and (edge[1] in C):
+            if G.degree(edge[0]) > G.degree(edge[1]):
+                if set(G.neighbors(edge[1])).issubset(set(C)):
+                    C.remove(edge[1])
+            else:
+                if set(G.neighbors(edge[0])).issubset(set(C)):
+                    C.remove(edge[0])
+    return C
+
+def minVC_Hills(G):
+    global start_time
+    R = minVC_approx1(G)
+    RL=R # to get same size as approximation a test***
+    start_time=time.time()
+    trace=[]
+    GL=G
+    UE=GL.nodes()
+    CL=[]
+    for z in range (0,len(RL)):
+        v=RL[z]
+        UE=GL.nodes()
+        if not UE:
+            break
+        if v in UE:
+            #UE.remove(v) #this line and insert line are to put v in the front of UE
+            #UE.insert(0,v)#this line and insert line are to put v in the front of UE
+            i = UE.index(v)
+        else:
+            v=UE[0]
+            i = UE.index(v)
+        for y in range (i,len(UE)): 
+            if len(UE) == 1:
+                v1=v
+                break
+            elif y == len(UE)-1:
+                v1=v
+                break        
+            elif GL.degree(UE[y])>GL.degree(UE[y+1]):
+                v1=UE[y]
+                break
+            elif GL.degree(UE[y])==GL.degree(UE[y+1]) and y==len(UE)-1:
+                v1=UE[y]
+                break
+            else:
+                v1=UE[y+1]
+        CL.append(v1)
+        neighbors = GL.neighbors(v1)
+        for q in neighbors:
+            GL.remove_edge(v1,q)
+        GL.remove_node(v1)
+        isolates = nx.isolates(GL)
+        for node in isolates:
+            GL.remove_node(node)
+        if z == len(RL)-1:
+            trace.append([len(CL),time.time()-start_time])                             
+    return CL, trace

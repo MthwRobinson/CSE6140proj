@@ -1,2 +1,2 @@
-# CSE6140proj
-minimum vertex cover algorithms
+# cse6140proj
+Fall 2015 CSE 6140 Project
